@@ -1,0 +1,298 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+  description: Sepcification for openAPI
+  termsOfService: http://example.com/terms/
+servers:
+  - url: https://api.server.test/v1
+    description: Test Server
+  - url: https://api.server.prod/v1
+    description: Production Server
+paths:
+  /v1/students:
+    get:
+      responses:
+        '200':
+          description: List of students
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                maxItems: 100
+                items:
+                  type: string
+                  description: name
+                  minLength: 2
+                  maxLength: 100
+  /v1/customers:
+    get:
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                maxItems: 100
+                description: list of customers
+                items:
+                  type: object
+                  description: customer object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                      minLength: 2
+                      maxLength: 100
+                      example: kaan
+                    lastname:
+                      type: string
+                      minLength: 2
+                      maxLength: 100
+                    address:
+                      type: object
+                      properties:
+                        line1:
+                          type: string
+                        city:
+                          type: string
+                        stateCode:
+                          type: string
+                          minLength: 2
+                          maxLength: 2
+                          description: 2 Letter State Code
+                          #enum: [AL, AK, AZ, AR, CA]
+                          enum:
+                            - AL
+                            - AK
+                            - AZ
+                            - AR
+                            - CA
+                        zipcode:
+                          type: string
+
+
+  #instead of using every time the address object, we can create a address component so that we can reuse it.The code would look like this:
+
+  /v1/customersShort:
+    get:
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                maxItems: 100
+                description: list of customers
+                items:
+                  type: object
+                  description: customer object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                      minLength: 2
+                      maxLength: 100
+                      example: kaan
+                    lastname:
+                      type: string
+                      minLength: 2
+                      maxLength: 100
+                    address:
+                      $ref: "#/components/schemas/Address"
+  /v1/customersShorter:
+    get:
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                maxItems: 100
+                description: list of customers
+                items:
+                  $ref: "#/components/schemas/customer"
+  /v1/customersShortest:
+    get:
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/customerList"
+
+    # Using Parameters
+
+  /v1/customerParameter:
+    get:
+      parameters:
+        - name: pageNumber
+          in: query
+          description: Page Number
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/customerList"
+
+  # Using Parameters as components - 169
+  # Using Tags  
+  /v1/customerParameterComponents:
+    get:
+      tags:
+        - Customers
+      parameters:
+        - $ref: "#/components/parameters/pageParameters"
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/customerList"
+
+  # Using URL as Parameter
+  # Using Summary and Description 195-196
+  
+
+  /v1/customerParameterURL:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/pageParameters"
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/customerList"
+  
+  /v1/customerParameterURL{customerId}: #this is a path parameter {}
+    get:
+      summary: List of Customers
+      description: Get a List of **Customers** in the *System*
+      tags:
+        - Customers
+        - Customers2
+      parameters:
+        - name: customerId
+          in: path
+          description: Customer Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Found Customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/customer"
+
+
+
+################ COMPONENTS #######################
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        stateCode:
+          type: string
+          minLength: 2
+          maxLength: 2
+          description: 2 Letter State Code
+          #enum: [AL, AK, AZ, AR, CA]
+          enum:
+            - AL
+            - AK
+            - AZ
+            - AR
+            - CA
+        zipcode:
+          type: string
+
+    # we could also make the "customer object" a component so we could reuse it. it is the same line as 115 address
+    
+    customer:
+      type: object
+      description: customer object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: kaan
+        lastname:
+          type: string
+          minLength: 2
+          maxLength: 100
+        address:
+          $ref: "#/components/schemas/Address"
+
+    # we can make this even shorter by making the array a component
+    customerList:
+      type: array
+      minItems: 1
+      maxItems: 100
+      description: list of customers
+      items:
+        $ref: "#/components/schemas/customer"
+
+
+  # we can also make paramaters as components for reuse
+  parameters:
+    pageParameters:
+      name: pageNumber
+      in: query
+      description: Page Number
+      schema:
+        type: integer
+        format: int32
+        default: 1
+    pageParameters2:
+      name: pageNumber
+      in: query
+      description: Page Number
+      schema:
+        type: integer
+        format: int32
+        default: 1    
+        
+
+    

@@ -181,5 +181,140 @@ public class Main {
         System.out.println("visa2 = " + visa2.matches("^4[0-9]{12}([0-9]{3})?$"));
         System.out.println("visa3 = " + visa3.matches("^4[0-9]{12}([0-9]{3})?$"));
         System.out.println("visa4 = " + visa4.matches("^4[0-9]{12}([0-9]{3})?$"));
+
+
+        System.out.println(".".repeat(40));
+
+
+
+
+
+
+
+        String location  ="location/48.74,9.31,100.5/";
+        System.out.println(location.replaceAll(",[0-9]{3}[.][0-9]","YYY.Y"));
+
+
+        //"location\\/(\\d+\\.\\d{2}),(\\d+\\.\\d{2}),(\\d+\\.\\d{1})\\/"
+        String SpeedPattern = "(,)([0-9]+[.][0-9]+)(/)";
+        Pattern patternSpeed = Pattern.compile(SpeedPattern);
+        Matcher matcherSpeed = patternSpeed.matcher(location);
+        double speedD;
+
+        while(matcherSpeed.find()){
+            //System.out.println( matcherSpeed.start() + " to " + matcherSpeed.end());
+            System.out.println("Occurrence: " + matcherSpeed.group(2));
+            speedD = Double.parseDouble(matcherSpeed.group(2));
+            System.out.println(speedD);
+
+        }
+
+        //"^data/([A-Za-z]+),(.+?),([0-9]{10}),([A-Z]{2}[ ][A-Z]{2}[ ][0-9]{4})/$"
+        String data = "data/Polo,John Doe,01234567890,ES HE 2016/";
+        String regexData = "^data/[^,]+,[^,]+,[^,]+,[^/]+/$";
+
+        if(data.matches(regexData)){
+            System.out.println("true");
+        }else{
+            System.out.println("false");
+        }
+        System.out.println(".".repeat(40));
+        String LicencePattern = "(,)([A-Z]{2}[ ][A-Z]{2}[ ][0-9]{4})(/)";
+        Pattern patternLicence = Pattern.compile(LicencePattern);
+        Matcher matcherLicence = patternLicence.matcher(data);
+
+        while(matcherLicence.find()){
+            System.out.println(matcherLicence.group(2));
+        }
+
+
+        System.out.println(".".repeat(40));
+        String data2 = "data/Polo,John ,01234567890,ES HE 2016/";
+        String OwnerPattern = "^data/[^,]+,(.+?),[^/]+/$";
+        Pattern patternOwner = Pattern.compile(OwnerPattern);
+        Matcher matcherOwner = patternOwner.matcher(data2);
+        while(matcherOwner.find()){
+            System.out.println(matcherOwner.group(1));
+        }
+
+        System.out.println(".".repeat(40));
+
+        String adress = "maps/place/Flandernstraße+101,+73732+Esslingen/@48.745341,9.3199014,17z/";
+        String adresspattern ="(/)((?i)[a-z][\\+][\\d]+,[\\+][0-9]{5}[\\+](?i)[a-z])(/)";
+        Pattern patternaddress = Pattern.compile(adresspattern);
+        Matcher matcherAdd = patternaddress.matcher(adress);
+
+        while(matcherAdd.find()){
+            System.out.println(matcherOwner.group(2));
+        }
+
+        String numtest = "/Flandernstrasse+101,+73732+Esslingen/";
+        System.out.println(numtest.replaceAll("[a-zA-z]+\\+[0-9]+,\\+[0-9]{5}\\+[a-zA-z]+","X"));
+
+
+
+        String adress3 = "maps/place/Flandernstrasse+101,+73732+Esslingen/@48.745341,9.3199014,17z/";
+        String adresspattern3 ="/(\\w+)\\+(\\d+),\\+(\\d{5})\\+(\\w+)/";
+        Pattern patternaddress3 = Pattern.compile(adresspattern3);
+        Matcher matcherAdd3 = patternaddress3.matcher(adress3);
+        Adress adressInstance;
+        String adddress;
+        while(matcherAdd3.find()){
+
+            adddress = matcherAdd3.group(1) + " " + matcherAdd3.group(2)  + " " +matcherAdd3.group(3)  + " " +matcherAdd3.group(4);
+            //return new Adress(matcherAdd3.group(2),Integer.parseInt(matcherAdd3.group(3)),Integer.parseInt(matcherAdd3.group(4)),matcherAdd3.group(5));
+            System.out.println(adddress);
+        }
+
+        String adress4 = "S6TT45,13.00";
+        String adresspattern4 ="^(\\w{6},\\d{1,7}.\\d{1,2})$";
+        Pattern patternaddress4 = Pattern.compile(adresspattern4);
+        Matcher matcherAdd4 = patternaddress4.matcher(adress4);
+        String a = "23";
+        String empt = "" + a;
+        System.out.println(empt.getClass());
+
+        int numa = Integer.parseInt(a);
+        System.out.println(numa);
+
+        if(matcherAdd4.find()){
+            System.out.println(matcherAdd4.group(1));
+        }
+
+    }
+
+    }
+class Adress{
+
+    String Street;
+    int HouseNo;
+    int PostalCode;
+    String City;
+
+    public Adress(String street, int houseNo, int postalCode, String city) {
+        Street = street;
+        HouseNo = houseNo;
+        PostalCode = postalCode;
+        City = city;
+    }
+
+    @Override
+    public String toString() {
+        return "%s %d %d %s".formatted(Street,HouseNo,PostalCode,City);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
